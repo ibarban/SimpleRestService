@@ -1,13 +1,33 @@
-using Microsoft.Azure.Functions.Worker.Builder;
-using Microsoft.Extensions.Hosting;
+int requestCount = 0;
 
-var builder = FunctionsApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-builder.ConfigureFunctionsWebApplication();
+// Add services to the container.
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// Application Insights isn't enabled by default. See https://aka.ms/AAt8mw4.
-// builder.Services
-//     .AddApplicationInsightsTelemetryWorkerService()
-//     .ConfigureFunctionsApplicationInsights();
+var app = builder.Build();
 
-builder.Build().Run();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapGet("/helath", () => {});
+
+app.MapGet("/simpleRequest", (HttpContext context) => {
+    if (requestCount < 500)
+    {
+        requestCount++;
+        context.Response.StatusCode = 200; // OK
+    }
+    else
+    {
+        context.Response.StatusCode = 400; // Bad Request
+    }
+});
+
+app.Run();
