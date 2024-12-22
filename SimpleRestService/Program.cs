@@ -1,4 +1,4 @@
-int requestCount = 0;
+long requestCount = 0;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,18 +16,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/helath", () => {});
-
-app.MapGet("/simpleRequest", (HttpContext context) => {
+app.MapGet("/helath", (HttpContext context) => {
     if (requestCount < 500)
     {
-        requestCount++;
         context.Response.StatusCode = 200; // OK
     }
     else
     {
         context.Response.StatusCode = 400; // Bad Request
     }
+});
+
+app.MapGet("/simpleRequest", (HttpContext context) => {
+    requestCount++;
 });
 
 app.Run();
